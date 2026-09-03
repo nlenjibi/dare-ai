@@ -1,7 +1,19 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npx create-next-app@latest . --ts --tailwind --app --no-src-dir --eslint --import-alias \"@/*\" --no-git)"
+      "Bash(npx create-next-app@latest . --ts --tailwind --app --no-src-dir --eslint --import-alias \"@/*\" --no-git)",
+      "Bash(grep -E --line-buffered \"Success|success|error|Error|done|Done|created|npm|yarn|✓|✔|ready|Ready|exit|Exit|\\\\$\")",
+      "Bash(rm -rf lib components tests)",
+      "Read(//c/c/Users/TimothyNlenjibi/Desktop/projects/djangoNew/**)",
+      "Bash(npx tsc *)",
+      "Bash(grep -E --line-buffered \"error TS|error:|warning:|Done|done|\\\\$|Cannot|found 0|error\\\\\\(s\\\\\\)\")",
+      "Bash(grep -q \"error\\\\|Found\\\\|Done\\\\|\\\\$\" \"C:/Users/TIMOTH~1/AppData/Local/Temp/claude/C--Users-TimothyNlenjibi-Desktop-projects-djangoNew-dare-ai/583d84f6-8321-4a4c-aab0-1d9b47e4fabe/tasks/b57thbfpj.output\")",
+      "Bash(node -e \"const z = require\\('zod'\\); console.log\\(z.version || 'no version'\\)\")",
+      "Bash(node -e \"const z = require\\('zod'\\); const r = z.enum\\(['A', 'B']\\); console.log\\(r._def?.typeName || 'ok'\\)\")",
+      "Bash(git checkout *)",
+      "Bash(gh auth *)",
+      "Bash(gh repo *)",
+      "Bash(git commit *)"
     ]
   }
 }
