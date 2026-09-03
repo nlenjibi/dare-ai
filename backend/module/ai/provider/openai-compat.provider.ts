@@ -9,7 +9,7 @@ function buildClient(provider: string): { client: OpenAI; defaultModel: string }
     case "groq":
       return {
         client: new OpenAI({
-          apiKey: process.env.GROQ_API_KEY,
+          apiKey: process.env.GROQ_API_KEY ?? process.env.AI_API_KEY,
           baseURL: GROQ_BASE_URL,
         }),
         defaultModel: process.env.GROQ_MODEL ?? "llama-3.1-8b-instant",
