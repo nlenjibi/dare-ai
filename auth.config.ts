@@ -12,13 +12,12 @@ export const authConfig: NextAuthConfig = {
       if (isPublic) return true;
       return isLoggedIn;
     },
-    jwt({ token, user }) {
-      if (user) token.id = user.id;
-      return token;
-    },
     session({ session, token }) {
-      if (token.id && session.user) {
-        (session.user as { id: string }).id = token.id as string;
+      // Only copy token.id if it looks like a MongoDB ObjectId (24 hex chars).
+      // Google OAuth UUID tokens from old sessions are rejected here.
+      const id = token.id as string | undefined;
+      if (id && /^[0-9a-f]{24}$/.test(id) && session.user) {
+        (session.user as { id: string }).id = id;
       }
       return session;
     },

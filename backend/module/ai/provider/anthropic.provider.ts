@@ -1,22 +1,23 @@
 import Anthropic from "@anthropic-ai/sdk";
 import type { AIProvider, AIRequest, AIResponse } from "./index";
 import { estimateCost } from "./index";
+import { OpenAICompatProvider } from "./openai-compat.provider";
 
 export { estimateCost };
 
-const client = new Anthropic({ apiKey: process.env.AI_API_KEY });
-
 export class AnthropicProvider implements AIProvider {
+  private client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+
   async generate(input: AIRequest): Promise<AIResponse> {
     const start = Date.now();
-    const model = input.model ?? process.env.AI_MODEL ?? "claude-sonnet-4-6";
+    const model = input.model ?? process.env.ANTHROPIC_MODEL ?? "claude-sonnet-4-6";
     const maxTokens = input.maxTokens ?? Number(process.env.AI_MAX_OUTPUT_TOKENS ?? 4096);
 
     const userContent = input.context
       ? `${input.stagePrompt}\n\n${input.context}`
       : input.stagePrompt;
 
-    const response = await client.messages.create({
+    const response = await this.client.messages.create({
       model,
       max_tokens: maxTokens,
       system: input.systemPrompt,
@@ -38,9 +39,21 @@ export class AnthropicProvider implements AIProvider {
   }
 }
 
-let _provider: AnthropicProvider | null = null;
+let _provider: AIProvider | null = null;
 
 export function getAIProvider(): AIProvider {
-  _provider ??= new AnthropicProvider();
+  if (_provider) return _provider;
+
+  const providerName = (process.env.AI_PROVIDER ?? "anthropic").toLowerCase();
+
+  switch (providerName) {
+    case "groq":
+    case "openai":
+      _provider = new OpenAICompatProvider(providerName);
+      break;
+    default:
+      _provider = new AnthropicProvider();
+  }
+
   return _provider;
 }

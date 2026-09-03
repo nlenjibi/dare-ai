@@ -1,5 +1,6 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+import Google from "next-auth/providers/google";
 import { z } from "zod";
 import { authConfig } from "@/auth.config";
 import { connectDB } from "@/backend/database/mongoose";
@@ -13,6 +14,10 @@ const loginSchema = z.object({
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
   providers: [
+    Google({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    }),
     Credentials({
       async authorize(credentials) {
         const parsed = loginSchema.safeParse(credentials);
@@ -29,4 +34,35 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
     }),
   ],
+  callbacks: {
+    ...authConfig.callbacks,
+    async jwt({ token, user, account, profile }) {
+      // Google OAuth must come first — NextAuth sets user.id to Google's sub (UUID),
+      // which is not a valid MongoDB ObjectId; we must upsert and use the DB _id instead.
+      if (account?.provider === "google" && profile?.email) {
+        await connectDB();
+        let dbUser = await UserModel.findOne({ email: profile.email });
+        if (!dbUser) {
+          dbUser = await UserModel.create({
+            email: profile.email,
+            name: profile.name ?? undefined,
+            image: (profile as { picture?: string }).picture ?? undefined,
+            emailVerified: new Date(),
+          });
+        } else if (!dbUser.image && (profile as { picture?: string }).picture) {
+          dbUser.image = (profile as { picture?: string }).picture;
+          await dbUser.save();
+        }
+        token.id = dbUser._id.toString();
+        return token;
+      }
+
+      // Credentials login — user.id is already the MongoDB ObjectId string
+      if (user?.id) {
+        token.id = user.id;
+      }
+
+      return token;
+    },
+  },
 });

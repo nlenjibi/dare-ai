@@ -16,6 +16,7 @@ import { ComponentList } from "@/frontend/module/dare/decompose/component/compon
 import { AssumptionTable } from "@/frontend/module/dare/audit/component/assumption-table";
 import { SolutionList } from "@/frontend/module/dare/recombine/component/solution-card";
 import { ExperimentList } from "@/frontend/module/dare/experiment/component/experiment-card";
+import { ObjectiveSelector } from "@/frontend/module/dare/problem/component/objective-selector";
 
 type Params = { params: Promise<{ projectId: string }> };
 
@@ -64,13 +65,28 @@ export default async function ProjectPage({ params }: Params) {
               <Link href={`/projects/${projectId}/problem`} className="text-xs text-muted-foreground hover:underline">Edit</Link>
             </div>
             {problem ? (
-              <p className="text-sm">{problem.statement}</p>
+              <>
+                <p className="text-sm">{problem.statement}</p>
+                {problem.objective && (
+                  <p className="text-xs text-muted-foreground">
+                    <span className="font-medium">Objective:</span> {problem.objective}
+                  </p>
+                )}
+              </>
             ) : (
               <p className="text-sm text-muted-foreground">
                 <Link href={`/projects/${projectId}/problem`} className="underline">Define your problem</Link> to begin.
               </p>
             )}
           </section>
+
+          {project.status === "WAITING_FOR_USER" && problem?.deeperObjective && (
+            <ObjectiveSelector
+              projectId={projectId}
+              originalStatement={problem.statement}
+              deeperObjective={problem.deeperObjective}
+            />
+          )}
 
           {components.length > 0 && (
             <ComponentList components={components as Parameters<typeof ComponentList>[0]["components"]} />

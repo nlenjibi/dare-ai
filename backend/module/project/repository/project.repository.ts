@@ -29,6 +29,18 @@ export async function archiveProject(id: string, userId: string) {
   return ProjectModel.findOneAndUpdate({ _id: id, userId }, { archivedAt: new Date() }, { new: true }).lean();
 }
 
+export async function unarchiveProject(id: string, userId: string) {
+  await connectDB();
+  return ProjectModel.findOneAndUpdate({ _id: id, userId }, { archivedAt: null }, { new: true }).lean();
+}
+
+export async function findArchivedProjects(userId: string) {
+  await connectDB();
+  return ProjectModel.find({ userId, archivedAt: { $ne: null } })
+    .sort({ archivedAt: -1 })
+    .lean();
+}
+
 export async function deleteProject(id: string, userId: string) {
   await connectDB();
   await ProblemModel.deleteMany({ projectId: id });

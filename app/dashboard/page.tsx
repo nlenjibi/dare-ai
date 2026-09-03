@@ -12,6 +12,7 @@ export default async function DashboardPage() {
 
   await connectDB();
   const userId = (session.user as { id: string }).id;
+  if (!userId || !/^[0-9a-f]{24}$/.test(userId)) redirect("/api/auth/signout");
   const projects = await ProjectModel.find({ userId, archivedAt: null })
     .sort({ updatedAt: -1 })
     .limit(20)
@@ -22,12 +23,20 @@ export default async function DashboardPage() {
       <main className="max-w-5xl mx-auto px-6 py-8 space-y-6">
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-semibold">Projects</h2>
-          <Link
-            href="/projects/new"
-            className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
-          >
-            New project
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link
+              href="/dashboard/archived"
+              className="text-sm text-muted-foreground hover:text-foreground"
+            >
+              Archived
+            </Link>
+            <Link
+              href="/projects/new"
+              className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+            >
+              New project
+            </Link>
+          </div>
         </div>
         <ProjectGrid projects={projects as Parameters<typeof ProjectGrid>[0]["projects"]} />
       </main>
