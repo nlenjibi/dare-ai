@@ -1,0 +1,44 @@
+name: Security Scan (Scheduled)
+
+on:
+  schedule:
+    - cron: '0 0 * * 0' # Every Sunday at midnight UTC
+  workflow_dispatch:     # Allow manual triggering from the Actions tab
+
+env:
+  NODE_VERSION: '20.x'
+
+jobs:
+  security:
+    name: Dependency Security Audit
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Full audit report (all severities)
+        run: npm audit --audit-level=info
+        continue-on-error: true
+
+      - name: Block on high/critical production vulnerabilities
+        run: npm audit --omit=dev --audit-level=high
+
+      - name: Run Trivy filesystem scan
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          format: table
+          severity: HIGH,CRITICAL
+          exit-code: '1'
+        continue-on-error: true
