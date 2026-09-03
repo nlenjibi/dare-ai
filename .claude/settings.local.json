@@ -10,10 +10,11 @@
       "Bash(grep -q \"error\\\\|Found\\\\|Done\\\\|\\\\$\" \"C:/Users/TIMOTH~1/AppData/Local/Temp/claude/C--Users-TimothyNlenjibi-Desktop-projects-djangoNew-dare-ai/583d84f6-8321-4a4c-aab0-1d9b47e4fabe/tasks/b57thbfpj.output\")",
       "Bash(node -e \"const z = require\\('zod'\\); console.log\\(z.version || 'no version'\\)\")",
       "Bash(node -e \"const z = require\\('zod'\\); const r = z.enum\\(['A', 'B']\\); console.log\\(r._def?.typeName || 'ok'\\)\")",
-      "Bash(git checkout *)",
-      "Bash(gh auth *)",
-      "Bash(gh repo *)",
-      "Bash(git commit *)"
+      "Bash(node *)",
+      "Bash(grep -v \"^$\")",
+      "Bash(rm \"C:\\\\Users\\\\TimothyNlenjibi\\\\Desktop\\\\projects\\\\djangoNew\\\\dare-ai\\\\app\\\\projects\\\\[projectId]\\\\_components\\\\dare-actions.tsx\")",
+      "Bash(rm \"C:\\\\Users\\\\TimothyNlenjibi\\\\Desktop\\\\projects\\\\djangoNew\\\\dare-ai\\\\app\\\\projects\\\\[projectId]\\\\experiment\\\\[experimentId]\\\\_components\\\\result-form.tsx\")",
+      "Bash(del *)"
     ]
   }
 }
